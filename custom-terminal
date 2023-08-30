@@ -12,6 +12,6 @@ git clone --depth 1 -- https://github.com/marlonrichert/zsh-autocomplete.git $ZS
 
 # find and replace plugins=(git)
 # with full string
-sed -i 's/theme=agnoster/theme=jonathan/g' ~/.zshrc
+sed -i 's/ZSH_THEME="agnoster"/ZSH_THEME=jonathan/g' ~/.zshrc
 sed -i 's/(git)/(git zsh-autocomplete zsh-autosuggestions zsh-syntax-highlighting)/g' ~/.zshrc > ~/.zshrc
 
