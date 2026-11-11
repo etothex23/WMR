@@ -29,9 +29,10 @@ esac
 # Termux only: Ubuntu (proot-distro) + Claude Code living inside it
 if command -v proot-distro >/dev/null 2>&1; then
   alias ubu='proot-distro login ubuntu --shared-tmp'
-  # cl [claude args]  - run Claude Code in Ubuntu, in the directory you are standing in
+  # cl [claude args]  - run Claude Code in Ubuntu, in the directory you are standing in.
+  # Uses only documented proot-distro 5.x options (-w, -e, --bind); no nested shell quoting.
   cl() {
-    proot-distro login ubuntu --shared-tmp --bind "$PWD:/root/work" -- \
-      bash -lc 'export PATH="$HOME/.local/bin:$PATH"; cd /root/work && exec claude "$@"' _ "$@"
+    proot-distro login ubuntu --shared-tmp --bind "$PWD:/root/work" -w /root/work \
+      -e "PATH=/root/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" -- claude "$@"
   }
 fi
