@@ -433,9 +433,13 @@ stage_claude() {
     say "Claude Code via proot-distro $UBUNTU_ALIAS"
     pkg_install proot-distro -- --
     have proot-distro || { err "proot-distro missing"; return 1; }
-    local rootfs="${PREFIX:-/data/data/com.termux/files/usr}/var/lib/proot-distro/installed-rootfs/$UBUNTU_ALIAS"
-    if [ -d "$rootfs" ]; then ok "$UBUNTU_ALIAS rootfs already installed"
-    else run proot-distro install "$UBUNTU_ALIAS" || { err "proot-distro install failed"; return 1; }; fi
+    # Version-independent check: if we can log in and run `true`, the distro exists
+    # (proot-distro 5.x stores containers differently from 4.x, so don't look at folders).
+    if [ "$DRY_RUN" -eq 0 ] && proot-distro login "$UBUNTU_ALIAS" -- true >/dev/null 2>&1; then
+      ok "$UBUNTU_ALIAS already installed"
+    else
+      run proot-distro install "$UBUNTU_ALIAS" || { err "proot-distro install failed"; return 1; }
+    fi
     ensure_repo || true
     # Re-run this same installer inside Ubuntu, with the repo bind-mounted so no extra download is needed.
     run proot-distro login "$UBUNTU_ALIAS" --shared-tmp --bind "$WMR_HOME:/root/WMR" -- \
