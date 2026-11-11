@@ -300,7 +300,7 @@ stage_zsh() {
   fi
 
   # .zshrc edits. zsh-autocomplete first, zsh-syntax-highlighting last (their docs).
-  local plugins="${WMR_PLUGINS:-git zsh-autocomplete zsh-autosuggestions zsh-syntax-highlighting}"
+  local plugins="${WMR_PLUGINS:-git zsh-autosuggestions zsh-syntax-highlighting}"
   set_line "$HOME/.zshrc" '^[[:space:]]*ZSH_THEME=' 'ZSH_THEME="watermelonrobot"'
   set_line "$HOME/.zshrc" '^[[:space:]]*plugins=\(.*\)[[:space:]]*$' "plugins=($plugins)"
   append_once "$HOME/.zshrc" "# >>> WMR >>>" \
