@@ -1,0 +1,5 @@
+# Desktop-only (no Termux wheels): pyTracking/ scripts. pip install -r this on a PC/Mac.
+mediapipe
+opencv-python
+numpy
+pillow

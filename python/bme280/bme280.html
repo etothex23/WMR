@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BME280 Sensor Data</title>
+    <script>
+        function updateData() {
+            fetch('/sensor_data')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById("temperature").innerText = data.temperature + " °C";
+                    document.getElementById("humidity").innerText = data.humidity + " %";
+                    document.getElementById("pressure").innerText = data.pressure + " hPa";
+                    document.getElementById("altitude").innerText = data.altitude + " meters";
+                })
+                .catch(error => console.error("Error fetching sensor data:", error));
+        }
+        setInterval(updateData, 10000); // Refresh every 10 seconds
+        window.onload = updateData;
+    </script>
+</head>
+<body>
+    <h2>BME280 Sensor Readings</h2>
+    <p>Temperature: <span id="temperature">Loading...</span></p>
+    <p>Humidity: <span id="humidity">Loading...</span></p>
+    <p>Pressure: <span id="pressure">Loading...</span></p>
+    <p>Altitude: <span id="altitude">Loading...</span></p>
+</body>
+</html>

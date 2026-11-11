@@ -1,0 +1,7 @@
+# Raspberry Pi / CircuitPython hardware scripts (led-panel.py, bme280/, newGPS-test/)
+adafruit-blinka
+adafruit-circuitpython-bme280
+adafruit-circuitpython-neopixel
+adafruit-circuitpython-rainbowio
+pyserial
+pynmea2

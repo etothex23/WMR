@@ -1,0 +1,8 @@
+# Light deps for the scripts in python/ (pure-python or wheels everywhere, incl. Termux).
+# numpy / pillow are installed from the system package manager first; pip only fills gaps.
+requests
+flask
+pyserial
+pynmea2
+pillow
+numpy

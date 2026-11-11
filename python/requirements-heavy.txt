@@ -1,0 +1,5 @@
+# Heavier deps: Stocks/ (yfinance, pandas) and GAISDK/ (google-generativeai).
+# Installed by install.sh by default on Linux; opt-in on Termux (may compile from source).
+pandas
+yfinance
+google-generativeai

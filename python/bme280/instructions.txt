@@ -1,0 +1,44 @@
+4. Setting Up Apache2 to Serve the Flask App
+Install mod_wsgi:
+
+sh
+Copy
+Edit
+sudo apt install libapache2-mod-wsgi-py3
+Create a WSGI File (bme280.wsgi): Create a new file /var/www/html/bme280.wsgi:
+
+python
+Copy
+Edit
+import sys
+sys.path.insert(0, "/home/pi/")  # Adjust if script is in a different directory
+
+from bme280_web import app as application
+Apache Configuration: Create a new Apache config file:
+
+sh
+Copy
+Edit
+sudo nano /etc/apache2/sites-available/bme280.conf
+Add the following:
+
+php-template
+Copy
+Edit
+<VirtualHost *:80>
+    ServerName your_raspberry_pi_ip
+
+    WSGIDaemonProcess bme280 user=pi group=pi threads=5
+    WSGIScriptAlias / /var/www/html/bme280.wsgi
+
+    <Directory /home/pi/>
+        Require all granted
+    </Directory>
+</VirtualHost>
+Enable the site and restart Apache:
+
+sh
+Copy
+Edit
+sudo a2ensite bme280.conf
+sudo systemctl restart apache2
