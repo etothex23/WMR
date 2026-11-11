@@ -25,7 +25,7 @@ The parts `install.sh` cannot do - Android settings, accounts, apps.
 
 ## 5. Termux (this repo)
 - [ ] Install Termux from F-Droid (or GitHub releases), plus Termux:API if wanted
-- [ ] `pkg install -y curl && curl -fsSL https://raw.githubusercontent.com/etothex23/WMR/main/install.sh | bash`
+- [ ] `pkg update -y && pkg upgrade -y && pkg install -y curl && curl -fsSL https://raw.githubusercontent.com/etothex23/WMR/main/install.sh | bash`
 - [ ] Add the printed SSH public key at https://github.com/settings/ssh/new
 - [ ] Type `cl` in a folder, sign in to Claude Code
 - [ ] Android: Settings > Apps > Termux > Battery > Unrestricted (so long jobs aren't killed)

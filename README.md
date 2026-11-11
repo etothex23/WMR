@@ -6,7 +6,7 @@ wmr settings and configs and apps - one script to set up a fresh device.
 **Fresh Termux** (install Termux from F-Droid or GitHub, not the Play Store):
 
 ```bash
-pkg install -y curl && curl -fsSL https://raw.githubusercontent.com/etothex23/WMR/main/install.sh | bash
+pkg update -y && pkg upgrade -y && pkg install -y curl && curl -fsSL https://raw.githubusercontent.com/etothex23/WMR/main/install.sh | bash
 ```
 
 **Already cloned** (Ubuntu / Debian / Raspberry Pi OS / proot / macOS):

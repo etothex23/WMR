@@ -3,7 +3,7 @@
 # WMR bootstrap  -  one script to set up a fresh Termux / Ubuntu / Debian / mac
 #
 #   Termux (fresh install):
-#     pkg install -y curl && curl -fsSL https://raw.githubusercontent.com/etothex23/WMR/main/install.sh | bash
+#     pkg update -y && pkg upgrade -y && pkg install -y curl && curl -fsSL https://raw.githubusercontent.com/etothex23/WMR/main/install.sh | bash
 #
 #   Already cloned:
 #     ./install.sh            # ask a few questions
