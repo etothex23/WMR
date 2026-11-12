@@ -19,7 +19,7 @@ WMR_RAW="${WMR_RAW:-https://raw.githubusercontent.com/etothex23/WMR/main}"
 WMR_HOME="${WMR_HOME:-$HOME/WMR}"
 UBUNTU_ALIAS="${UBUNTU_ALIAS:-ubuntu}"          # proot-distro distro name
 
-ALL_STAGES="base repo zsh python git claude"
+ALL_STAGES="base repo zsh python git claude plank"
 ASSUME_YES=0
 DRY_RUN=0
 INNER=0                                          # running inside proot ubuntu
@@ -59,6 +59,7 @@ Stages (in order): $ALL_STAGES
   git     git name/email, SSH key, optional 'gh auth login'
   claude  Termux: proot-distro Ubuntu + Claude Code inside it
           Linux/mac: Node + Claude Code directly
+  plank   Linux desktop only, opt-in: the Plank dock (+ autostart)
 
 Environment: WMR_GIT_NAME, WMR_GIT_EMAIL, WMR_HOME, WMR_REPO, WMR_PLUGINS
 EOF
@@ -300,7 +301,7 @@ stage_zsh() {
   fi
 
   # .zshrc edits. zsh-autocomplete first, zsh-syntax-highlighting last (their docs).
-  local plugins="${WMR_PLUGINS:-git zsh-autosuggestions zsh-syntax-highlighting}"
+  local plugins="${WMR_PLUGINS:-git zsh-autosuggestions zsh-autocomplete zsh-syntax-highlighting}"
   set_line "$HOME/.zshrc" '^[[:space:]]*ZSH_THEME=' 'ZSH_THEME="watermelonrobot"'
   set_line "$HOME/.zshrc" '^[[:space:]]*plugins=\(.*\)[[:space:]]*$' "plugins=($plugins)"
   append_once "$HOME/.zshrc" "# >>> WMR >>>" \
@@ -451,6 +452,25 @@ stage_claude() {
   else
     claude_install_local
   fi
+}
+
+# ---------- stage: plank (Linux desktop only, opt-in) ------------------------
+stage_plank() {
+  if [ "$ENV_KIND" != debian ] || [ "$INNER" -eq 1 ]; then say "plank: Linux desktop only - skipped"; return 0; fi
+  if [ -z "${DISPLAY:-}${WAYLAND_DISPLAY:-}" ] && [ "$DRY_RUN" -eq 0 ]; then say "plank: no desktop session detected - skipped"; return 0; fi
+  if have plank; then ok "plank already installed"
+  else
+    confirm "Install the Plank dock?" N || { say "skip: plank"; return 0; }
+    pkg_install -- plank -- || return 1
+  fi
+  # Start Plank on login (standard XDG autostart entry).
+  local auto="$HOME/.config/autostart/plank.desktop"
+  if [ ! -f "$auto" ] && [ "$DRY_RUN" -eq 0 ]; then
+    mkdir -p "$(dirname "$auto")"
+    printf '[Desktop Entry]\nType=Application\nName=Plank\nExec=plank\nX-GNOME-Autostart-enabled=true\n' > "$auto"
+    ok "plank autostart added ($auto)"
+  fi
+  say "Dock settings: run  plank --preferences"
 }
 
 # ---------- main -------------------------------------------------------------

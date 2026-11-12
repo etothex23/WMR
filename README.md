@@ -25,10 +25,11 @@ Safe to re-run any time - it only fixes what's missing and updates what's there.
 |----------|------|
 | `base`   | update packages; git, curl, zsh, openssh, python, imagemagick, ffmpeg, jq, gh, ... |
 | `repo`   | clone/update this repo to `~/WMR` |
-| `zsh`    | oh-my-zsh, plugins (autosuggestions, syntax-highlighting; zsh-autocomplete is downloaded but opt-in via `WMR_PLUGINS`), the `watermelonrobot` theme, `~/.zshrc` edits, aliases, default shell |
+| `zsh`    | oh-my-zsh, plugins (autosuggestions, autocomplete, syntax-highlighting - autocomplete is not part of stock oh-my-zsh, the installer downloads it), the `watermelonrobot` theme, `~/.zshrc` edits, aliases, default shell |
 | `python` | python deps for `python/` (`requirements.txt`; heavy ones are opt-in on Termux) |
 | `git`    | `user.name`/`user.email`, ed25519 SSH key (prints the public key), optional `gh auth login` |
 | `claude` | Termux: proot-distro **Ubuntu** + the same installer inside it + **Claude Code**. Linux/mac: Claude Code directly |
+| `plank`  | Linux desktop only, opt-in (asks, default no): the Plank dock + login autostart. Skipped on Termux/mac |
 
 ```bash
 ./install.sh --only zsh          # just one stage (or: zsh,git)
@@ -68,6 +69,7 @@ custom-terminal             old zsh-only script, now a shim that calls install.s
 
 ---
 
-Plank: the dock app
-1. I am making a plank editor - gui
-2. The commands are available but I like the app and wanted to contribute
+## Plank (Linux only)
+The `plank` stage installs the [Plank](https://launchpad.net/plank) dock on a Linux desktop and starts it on login.
+Not for macOS or Termux. Planned: a GUI editor for Plank settings (the `plank --preferences` / dconf options are all
+there already; the editor is just a nicer front end).
