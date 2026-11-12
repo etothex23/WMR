@@ -14,6 +14,24 @@ alias meow="$WMR_HOME/bash/kitty-cat.sh"
 alias noice="$WMR_HOME/bash/noice.sh"
 alias wmr-update='git -C "$WMR_HOME" pull --ff-only && echo "WMR updated - run: exec zsh"'
 
+# --- modern CLI tools (installed by the base stage) ---------------------------
+# Debian/Ubuntu rename two of them; zsh-bat already handles batcat for `cat`.
+command -v bat >/dev/null 2>&1 || { command -v batcat >/dev/null 2>&1 && alias bat=batcat; }
+command -v fd  >/dev/null 2>&1 || { command -v fdfind >/dev/null 2>&1 && alias fd=fdfind; }
+command -v eza >/dev/null 2>&1 && { alias ls='eza --group-directories-first'; alias ll='eza -l --git --group-directories-first'; alias la='eza -la --git --group-directories-first'; alias lt='eza --tree --level=2'; }
+# zoxide: `z <part-of-dir>` jumps, `zi` picks interactively
+command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init zsh)"
+# fzf: Ctrl+R history, Ctrl+T files, Alt+C cd.  `fzf --zsh` needs fzf >= 0.48; older apt builds ship a script.
+if command -v fzf >/dev/null 2>&1; then
+  if fzf --zsh >/dev/null 2>&1; then
+    source <(fzf --zsh)
+  else
+    for f in /usr/share/doc/fzf/examples/key-bindings.zsh /usr/share/fzf/key-bindings.zsh; do
+      [ -f "$f" ] && { source "$f"; break; }
+    done
+  fi
+fi
+
 case "$(uname -s)" in
   Darwin) [ -f "$WMR_HOME/config/aliases-mac.zsh" ] && source "$WMR_HOME/config/aliases-mac.zsh" ;;
   *)

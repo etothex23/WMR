@@ -52,7 +52,7 @@ Usage: install.sh [options]
   -h, --help         This text
 
 Stages (in order): $ALL_STAGES
-  base    update packages, install git curl zsh python imagemagick ...
+  base    update packages, install git curl zsh python imagemagick fzf zoxide bat ...
   repo    clone/update $WMR_REPO into \$WMR_HOME (default ~/WMR)
   zsh     oh-my-zsh + plugins + watermelonrobot theme + aliases + default shell
   python  python deps for the scripts in python/
@@ -241,6 +241,11 @@ stage_base() {
   pkg_install -e wget jq nano imagemagick ffmpeg gh \
     -- wget jq nano imagemagick ffmpeg \
     -- wget jq imagemagick ffmpeg gh
+  # modern CLI tools (fzf, zoxide, bat, eza, ripgrep, fd, tldr, btop, ncdu).
+  # Debian/Ubuntu ship bat as `batcat` and fd as `fdfind`; config/wmr.zsh aliases them back.
+  pkg_install -e fzf zoxide bat eza ripgrep fd tealdeer btop ncdu \
+    -- fzf zoxide bat eza ripgrep fd-find tldr btop ncdu \
+    -- fzf zoxide bat eza ripgrep fd tlrc btop ncdu
   if [ "$ENV_KIND" = termux ] && [ "$INNER" -eq 0 ] && confirm "Grant Termux access to shared storage (termux-setup-storage)?" Y; then
     run termux-setup-storage || true
   fi
@@ -290,6 +295,9 @@ stage_zsh() {
   git_sync https://github.com/zsh-users/zsh-autosuggestions.git      "$custom/plugins/zsh-autosuggestions"      --depth 1
   git_sync https://github.com/zsh-users/zsh-syntax-highlighting.git   "$custom/plugins/zsh-syntax-highlighting"  --depth 1
   git_sync https://github.com/marlonrichert/zsh-autocomplete.git      "$custom/plugins/zsh-autocomplete"         --depth 1
+  git_sync https://github.com/MichaelAquilina/zsh-you-should-use.git "$custom/plugins/you-should-use"           --depth 1
+  git_sync https://github.com/fdellwing/zsh-bat.git                   "$custom/plugins/zsh-bat"                  --depth 1
+  git_sync https://github.com/zsh-users/zaw.git                       "$custom/plugins/zaw"                      --depth 1
 
   # Theme: prefer the checked-out repo copy (always in sync), else download.
   run mkdir -p "$custom/themes"
@@ -301,7 +309,7 @@ stage_zsh() {
   fi
 
   # .zshrc edits. zsh-autocomplete first, zsh-syntax-highlighting last (their docs).
-  local plugins="${WMR_PLUGINS:-git zsh-autosuggestions zsh-autocomplete zsh-syntax-highlighting}"
+  local plugins="${WMR_PLUGINS:-git zsh-autosuggestions zsh-autocomplete zaw you-should-use zsh-bat zsh-syntax-highlighting}"
   set_line "$HOME/.zshrc" '^[[:space:]]*ZSH_THEME=' 'ZSH_THEME="watermelonrobot"'
   set_line "$HOME/.zshrc" '^[[:space:]]*plugins=\(.*\)[[:space:]]*$' "plugins=($plugins)"
   append_once "$HOME/.zshrc" "# >>> WMR >>>" \

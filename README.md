@@ -23,9 +23,9 @@ Safe to re-run any time - it only fixes what's missing and updates what's there.
 
 | stage    | what |
 |----------|------|
-| `base`   | update packages; git, curl, zsh, openssh, python, imagemagick, ffmpeg, jq, gh, ... |
+| `base`   | update packages; git, curl, zsh, openssh, python, imagemagick, ffmpeg, jq, gh, plus fzf, zoxide, bat, eza, ripgrep, fd, tldr, btop, ncdu |
 | `repo`   | clone/update this repo to `~/WMR` |
-| `zsh`    | oh-my-zsh, plugins (autosuggestions, autocomplete, syntax-highlighting - autocomplete is not part of stock oh-my-zsh, the installer downloads it), the `watermelonrobot` theme, `~/.zshrc` edits, aliases, default shell |
+| `zsh`    | oh-my-zsh, plugins (autosuggestions, autocomplete, zaw, you-should-use, zsh-bat, syntax-highlighting - the non-stock ones are downloaded by the installer), the `watermelonrobot` theme, `~/.zshrc` edits, aliases, default shell |
 | `python` | python deps for `python/` (`requirements.txt`; heavy ones are opt-in on Termux) |
 | `git`    | `user.name`/`user.email`, ed25519 SSH key (prints the public key), optional `gh auth login` |
 | `claude` | Termux: proot-distro **Ubuntu** + the same installer inside it + **Claude Code**. Linux/mac: Claude Code directly |
@@ -41,6 +41,8 @@ WMR_GIT_NAME="Me" WMR_GIT_EMAIL="me@example.com" ./install.sh --yes   # fully un
 After install:
 
 * `meow`, `rnf`, `gifit`, `noice` - the helper scripts in `bash/` (also on `PATH`)
+* `z <dir>` / `zi` (zoxide), Ctrl+R / Ctrl+T / Alt+C (fzf), `cat` = bat (`rcat` = plain cat), `ls`/`ll`/`la`/`lt` = eza,
+  `rg`, `fd`, `tldr <cmd>`, `btop`, `ncdu`
 * `wmr-update` - pull the latest WMR; `updootit` - update the system packages
 * Termux: `ubu` opens a shell in Ubuntu; `cl` runs **Claude Code in Ubuntu on the folder you are standing in**
   (first run prints a login URL - open it in the phone browser)
