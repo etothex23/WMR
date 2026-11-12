@@ -25,7 +25,7 @@ Safe to re-run any time - it only fixes what's missing and updates what's there.
 |----------|------|
 | `base`   | update packages; git, curl, zsh, openssh, python, imagemagick, ffmpeg, jq, gh, ... |
 | `repo`   | clone/update this repo to `~/WMR` |
-| `zsh`    | oh-my-zsh, plugins (autosuggestions, syntax-highlighting, autocomplete), the `watermelonrobot` theme, `~/.zshrc` edits, aliases, default shell |
+| `zsh`    | oh-my-zsh, plugins (autosuggestions, syntax-highlighting; zsh-autocomplete is downloaded but opt-in via `WMR_PLUGINS`), the `watermelonrobot` theme, `~/.zshrc` edits, aliases, default shell |
 | `python` | python deps for `python/` (`requirements.txt`; heavy ones are opt-in on Termux) |
 | `git`    | `user.name`/`user.email`, ed25519 SSH key (prints the public key), optional `gh auth login` |
 | `claude` | Termux: proot-distro **Ubuntu** + the same installer inside it + **Claude Code**. Linux/mac: Claude Code directly |
