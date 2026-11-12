@@ -15,7 +15,12 @@ pkg update -y && pkg upgrade -y && pkg install -y curl && curl -fsSL https://raw
 git clone https://github.com/etothex23/WMR.git ~/WMR && ~/WMR/install.sh
 ```
 
-It asks a handful of questions (stage on/off, git name/email, SSH key, `gh auth login`).
+**Mac / Linux** run in *simple mode*: no questions, just zsh -> oh-my-zsh -> plugins -> theme -> CLI tools ->
+`bash/` scripts + light python deps (stages `base repo zsh python`). `~/.zshrc` is backed up first
+(`~/.zshrc.bak-wmr-YYYYMMDD`). Extras on request: `--only git`, `--only claude`, `--only plank`.
+macOS needs [Homebrew](https://brew.sh).
+
+**Termux** gets the full interactive flow: it asks a handful of questions (stage on/off, git name/email, SSH key, `gh auth login`).
 `./install.sh --yes` takes every default and asks nothing.
 Safe to re-run any time - it only fixes what's missing and updates what's there.
 

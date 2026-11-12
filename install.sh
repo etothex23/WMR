@@ -20,6 +20,8 @@ WMR_HOME="${WMR_HOME:-$HOME/WMR}"
 UBUNTU_ALIAS="${UBUNTU_ALIAS:-ubuntu}"          # proot-distro distro name
 
 ALL_STAGES="base repo zsh python git claude plank"
+SIMPLE_STAGES="base repo zsh python"     # Mac / Linux default
+SIMPLE=0                                 # set by detect_env
 ASSUME_YES=0
 DRY_RUN=0
 INNER=0                                          # running inside proot ubuntu
@@ -50,6 +52,11 @@ Usage: install.sh [options]
   --skip a,b         Skip these stages
   --dry-run          Print what would run, change nothing
   -h, --help         This text
+
+Mac / Linux (simple mode): no questions; runs  $SIMPLE_STAGES
+  (zsh, oh-my-zsh, plugins, theme, CLI tools, bash/ + light python deps).
+  Extra stages on request:  --only git  |  --only claude  |  --only plank
+Termux: the full interactive flow below.
 
 Stages (in order): $ALL_STAGES
   base    update packages, install git curl zsh python imagemagick fzf zoxide bat ...
@@ -90,6 +97,10 @@ detect_env() {
   else
     ENV_KIND=unsupported
   fi
+
+  # Mac and plain Linux get the short, no-questions path; Termux (and the
+  # proot Ubuntu it drives with --inner) keeps the full flow.
+  if { [ "$ENV_KIND" = mac ] || [ "$ENV_KIND" = debian ]; } && [ "$INNER" -eq 0 ]; then SIMPLE=1; fi
 
   SUDO=""
   if [ "$ENV_KIND" = debian ] && [ "$(id -u)" -ne 0 ]; then
@@ -235,9 +246,16 @@ stage_base() {
   say "Base packages"
   pkg_update
   # essentials: all together (fast); optional extras: one by one so a missing package can't break the rest
-  pkg_install git curl zsh openssh python ncurses-utils \
-    -- git curl zsh openssh-client python3 python3-pip python3-venv ncurses-bin ca-certificates \
-    -- git curl zsh python
+  if [ "$ENV_KIND" = mac ]; then
+    have brew || { err "Homebrew is required on macOS - install it from https://brew.sh then re-run"; return 1; }
+    # macOS already ships zsh/curl; only add git/python if they are missing
+    local m=() t; for t in git python3; do have "$t" || m+=("$t"); done
+    [ ${#m[@]} -gt 0 ] && pkg_install -- -- "${m[@]/python3/python}"
+  else
+    pkg_install git curl zsh openssh python ncurses-utils \
+      -- git curl zsh openssh-client python3 python3-pip python3-venv ncurses-bin ca-certificates \
+      -- git curl zsh python
+  fi
   pkg_install -e wget jq nano imagemagick ffmpeg gh \
     -- wget jq nano imagemagick ffmpeg \
     -- wget jq imagemagick ffmpeg gh
@@ -308,6 +326,12 @@ stage_zsh() {
       || warn "could not fetch the theme"
   fi
 
+  # One backup per day before touching .zshrc
+  local bak="$HOME/.zshrc.bak-wmr-$(date +%Y%m%d)"
+  if [ -f "$HOME/.zshrc" ] && [ ! -f "$bak" ] && [ "$DRY_RUN" -eq 0 ]; then
+    cp "$HOME/.zshrc" "$bak" && ok "backed up ~/.zshrc -> $bak"
+  fi
+
   # .zshrc edits. zsh-autocomplete first, zsh-syntax-highlighting last (their docs).
   local plugins="${WMR_PLUGINS:-git zsh-autosuggestions zsh-autocomplete zaw you-should-use zsh-bat zsh-syntax-highlighting}"
   set_line "$HOME/.zshrc" '^[[:space:]]*ZSH_THEME=' 'ZSH_THEME="watermelonrobot"'
@@ -349,9 +373,7 @@ stage_python() {
       pkg_install -e python-numpy python-pillow python-pandas -- -- ;;
     debian)
       pkg_install -e -- python3-numpy python3-pil python3-pandas -- ;;
-    mac)
-      warn "mac: skipping auto pip install. Use:  python3 -m pip install -r $WMR_HOME/python/requirements.txt"
-      return 0 ;;
+    mac) : ;;
   esac
   have python3 || { warn "python3 not found"; return 1; }
   local req="$WMR_HOME/python/requirements.txt" heavy="$WMR_HOME/python/requirements-heavy.txt"
@@ -362,7 +384,9 @@ stage_python() {
     warn "$req not found (repo stage skipped?)"
   fi
   # pandas / yfinance / google-generativeai: fine on Linux wheels, but on Termux they may compile for ages.
-  if [ -f "$heavy" ]; then
+  if [ "$SIMPLE" -eq 1 ]; then
+    say "light deps only - heavy ones later: python3 -m pip install -r $heavy"
+  elif [ -f "$heavy" ]; then
     local want=Y; [ "$ENV_KIND" = termux ] && want=N
     if confirm "Install heavy deps (yfinance/pandas, google-generativeai)? $( [ "$ENV_KIND" = termux ] && echo 'Can compile for a long time on Termux.')" "$want"; then
       pip_install -r "$heavy" && ok "installed python/requirements-heavy.txt" || warn "heavy deps failed (on Termux try: pkg install python-pandas)"
@@ -494,11 +518,15 @@ main() {
     WMR_HOME="$here"; ok "using checkout at $WMR_HOME"
   fi
 
-  local s fn
-  for s in $ALL_STAGES; do
+  local s fn stages="$ALL_STAGES"
+  if [ "$SIMPLE" -eq 1 ] && [ -z "$ONLY" ]; then
+    stages="$SIMPLE_STAGES"
+    say "simple mode ($ENV_KIND): $stages   (more: --only git | claude | plank)"
+  fi
+  for s in $stages; do
     stage_enabled "$s" || { say "skip: $s"; continue; }
-    # Offer a choice per stage on a terminal; defaults to yes.
-    if [ "$TTY_OK" -eq 1 ] && [ -z "$ONLY" ] && ! confirm "Run stage '$s'?" Y; then say "skip: $s"; continue; fi
+    # Termux: offer a choice per stage on a terminal (default yes). Mac/Linux: no questions.
+    if [ "$SIMPLE" -eq 0 ] && [ "$TTY_OK" -eq 1 ] && [ -z "$ONLY" ] && ! confirm "Run stage '$s'?" Y; then say "skip: $s"; continue; fi
     # In the proot, 'claude' means "install it here".
     fn="stage_$s"
     if ! "$fn"; then FAILED+=("$s"); fi
